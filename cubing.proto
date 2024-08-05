@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+message SortScoresResponse {
+    string name = 1;
+    repeated double times = 2;
+    string avg = 3;
+    repeated uint32 gray = 4;
+    bool green = 5;
+}
+
+message ScoresResponse {
+    string name = 1;
+    repeated double times = 2;
+}
+
+message ArraySortScoreResponse {
+    repeated SortScoresResponse responses = 1;
+}
+
+message ArrayScoresResponse {
+    repeated ScoresResponse responses = 1;
+}
