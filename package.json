@@ -1,6 +1,6 @@
 {
   "name": "cubing",
-  "version": "0.1.0",
+  "version": "2.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -26,6 +26,7 @@
     "react": "^18",
     "react-bootstrap": "^2.10.3",
     "react-dom": "^18",
+    "react-imask": "^7.6.1",
     "styled-components": "^6.1.11"
   },
   "devDependencies": {

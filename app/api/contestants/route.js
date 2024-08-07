@@ -34,6 +34,11 @@ export async function DELETE(rq) {
     return new Response(null, { status: 204 });
 }
 
+function parseNum(t) {
+    const min = parseInt(t[0]), sec = parseFloat(t.slice(2, 8));
+    return 60*min + sec;
+}
+
 export async function PATCH(rq) {
     let req = await rq.json();
     
@@ -43,11 +48,8 @@ export async function PATCH(rq) {
     const database = client.db("cubing");
     const scores = database.collection("scores");
 
-    for (let i = 0; i < req.times.length; ++i) {
-        let f = parseFloat(req.times[i]);
-        if (Number.isNaN(f)) f = 0;
-        req.times[i] = f;
-    }
+    for (let i = 0; i < req.times.length; ++i)
+        req.times[i] = parseNum(req.times[i]);
 
     await scores.findOneAndUpdate({ name: req.name }, { $set: { times: req.times } });
     await client.close();

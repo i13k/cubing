@@ -100,8 +100,8 @@ class JudgeAdminComponent extends React.Component {
                 <p>Wybrany uczestnik: <b>{this.state.contestant}</b></p><br />
                 <Stack spacing={2} sx={{ pb: 2 }}>
                 {[...Array(this.state.stages)].map((_, i) => (
-                    <FormControl variant="standard">
-                        <InputLabel htmlFor={"S"+i}>Wynik ({i + 1})</InputLabel>
+                    <FormControl variant="standard" key={"C"+i}>
+                        <InputLabel htmlFor={"S"+i} key={"L"+i}>Wynik ({i + 1})</InputLabel>
                         <Input name={"S"+i} id={"S"+i} inputProps={{ inputMode: "numeric" }} type="text" key={"S"+i} value={this.state.times[i] || ""} onChange={this.changeTime.bind(this)} inputComponent={TextMaskCustom} />
                     </FormControl>
                 ))}
