@@ -2,7 +2,6 @@
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import AppBar from '@mui/material/AppBar';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,9 +9,27 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import React from 'react';
+import { IMaskInput } from 'react-imask';
 import IconButton from '@mui/material/IconButton';
 import CheckIcon from '@mui/icons-material/Check';
+import Input from '@mui/material/Input';
+import Stack from '@mui/material/Stack';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import { ArrayScoresResponse } from '@/app/messages';
+
+const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
+    const { onChange, ...other } = props;
+    return (
+        <IMaskInput
+            {...other}
+            mask="0:00.000"
+            inputRef={ref}
+            onAccept={value => onChange({ target: { name: props.name, value } })}
+            overwrite
+        />
+    );
+});
 
 class JudgeAdminComponent extends React.Component {
     constructor(props) {
@@ -50,10 +67,8 @@ class JudgeAdminComponent extends React.Component {
     }
 
     changeTime (e) {
-        let q = this.state.times, w = e.target.value.slice(0, e.target.value.length - 1), c = e.target.value[e.target.value.length - 1];
-        if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."].includes(c)) w += c;
-        
-        q[e.target.id.substring(1)] = w;
+        let q = this.state.times;
+        q[e.target.name.substring(1)] = e.target.value;
         this.setState({
             value: this.state.value,
             stages: this.state.stages,
@@ -83,13 +98,14 @@ class JudgeAdminComponent extends React.Component {
 
             <div style={{ display: (this.state.value === 0) ? "block" : "none", paddingTop: 16 }}>
                 <p>Wybrany uczestnik: <b>{this.state.contestant}</b></p><br />
-                {
-                    [...Array(this.state.stages)].map((_, i) => (
-                        <div key={"div"+i}>
-                            <TextField id={"S"+i} label={"Wynik ("+(i+1)+")"} inputProps={{ inputMode: "numeric" }} type="text" sx={{ pb: 2 }} key={"S"+i} value={this.state.times[i] || ""} onChange={this.changeTime.bind(this)} /><br key={"br"+i} />
-                        </div>
-                    ))
-                }
+                <Stack spacing={2} sx={{ pb: 2 }}>
+                {[...Array(this.state.stages)].map((_, i) => (
+                    <FormControl variant="standard">
+                        <InputLabel htmlFor={"S"+i}>Wynik ({i + 1})</InputLabel>
+                        <Input name={"S"+i} id={"S"+i} inputProps={{ inputMode: "numeric" }} type="text" key={"S"+i} value={this.state.times[i] || ""} onChange={this.changeTime.bind(this)} inputComponent={TextMaskCustom} />
+                    </FormControl>
+                ))}
+                </Stack>
                 <Button variant="contained" color="success" align="center" onClick={this.updateScores.bind(this)}>Zatwierdź</Button>
             </div>
 
