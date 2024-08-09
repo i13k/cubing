@@ -7,8 +7,7 @@ export async function GET(_) {
     await client.connect();
 
     const db = client.db("cubing");
-    const scores = db.collection("scores");
-    const temp = await scores.find({ times: [] }, { projection: { _id: 0 } });
+    const temp = await db.collection("scores").find({ times: [] }, { projection: { _id: 0 } });
     const contestants = await temp.toArray();
     let names = [];
     if (contestants.length < PEOPLE_PER_GROUP)
