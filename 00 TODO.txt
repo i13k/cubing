@@ -1,0 +1,9 @@
+* auto rozstawienie,
+* custom Infomessage,
+* random numbers !!!,
+* Remote Score entry with player nos.!,
+* error message in Remote Score entry when not enough is entered/wrong format!
+* draw/tie support
+* add structure:
+  event -> puzzle -> round
+* bug [!!]: scoreboard sometimes shows people who have been removed

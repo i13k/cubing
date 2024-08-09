@@ -9,7 +9,7 @@ export async function PUT(rq) {
     const database = client.db("cubing");
     const info = database.collection("info");
     
-    await info.findOneAndUpdate({ }, { $set: { people: names.names } });
+    await info.updateOne({ }, { $set: { people: names.names } });
 
     await client.close();
     return Response.json({ }, { status: 200 });

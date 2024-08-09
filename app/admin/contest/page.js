@@ -6,8 +6,11 @@ import Button from '@mui/material/Button';
 import React from 'react';
 
 export default function ContestAdmin() {
-    const removeContestants = e => {
+    const removeContestants = _ => {
         fetch("/api/sortScores?delete=true");
+    };
+    const autoRozstawienie = _ => {
+        fetch("/api/autoRozstawienie");
     };
     return (
         <main className="flex min-h-screen flex-col items-center">
@@ -19,6 +22,10 @@ export default function ContestAdmin() {
 
             <div style={{ paddingTop: 16 }}>
                 <Button variant="contained" color="error" align="center" onClick={removeContestants}>Obetnij osoby/następna runda</Button>
+            </div>
+
+            <div style={{ pb: 2 }}>
+                <Button variant="contained" align="center" onClick={autoRozstawienie}>Auto-rozstawienie</Button>
             </div>
         </main>
     );
