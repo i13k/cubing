@@ -48,6 +48,7 @@ class ScoresComponent extends Component {
         this.executed = false;
         this.running = true;
     }
+    psetState(newState) { return new Promise(resolve => this.setState(newState, resolve)); }
     async refreshData() {
         const regInfoFetch = await fetch("/api/info");
         const regInfo = await regInfoFetch.json();
@@ -59,7 +60,7 @@ class ScoresComponent extends Component {
         if (window.location.pathname != regInfo.currentRoute)
             window.location.pathname = regInfo.currentRoute;
 
-        this.setState({
+        await this.psetState({
             scores: scores,
             stages: regInfo.stages,
             fontSize: regInfo.fontSize,
@@ -67,8 +68,8 @@ class ScoresComponent extends Component {
         });
     }
 
-    setStatus(status) {
-        this.setState({
+    async setStatus(status) {
+        await this.psetState({
             scores: this.state.scores,
             stages: this.state.stages,
             fontSize: this.state.fontSize,
@@ -80,23 +81,24 @@ class ScoresComponent extends Component {
         if (this.executed) return;
         else this.executed = true;
         await this.refreshData();
+
         while (this.running) {
 
-            this.setStatus("showing");
+            await this.setStatus("showing");
             await sleep(1000);
 
-            this.setStatus("shown");
+            await this.setStatus("shown");
             await sleep(2000);
 
-            this.setStatus("hiding");
+            await this.setStatus("hiding");
             await sleep(1000);
-
 
             this.currentRow += getNumberOfRows();
             if (this.currentRow >= this.state.scores.length) {
                 this.currentRow = 0;
                 await this.refreshData();
             }
+
             await sleep(1000);
         }
     }
@@ -149,7 +151,7 @@ class ScoresComponent extends Component {
                           <TableRow key="h">
                               <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell, ...styles.ranking }} align="right">#</TableCell>
                               <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell, ...styles.name }}>uczestnik</TableCell>
-                              {[...Array(this.state.stages)].map((_, i) => <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} key={"h_r"+i.toString()} align="right">{i + 1}</TableCell>)}
+                              {[...Array(this.state.stages)].map((_, i) => <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} align="right" key={"H"+i}>{i + 1}</TableCell>)}
                               <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} align="right">=</TableCell>
                           </TableRow>
                       </TableHead>
@@ -157,12 +159,19 @@ class ScoresComponent extends Component {
                           {
                               this.state.scores.slice(this.currentRow, this.currentRow + getNumberOfRows()).map((score, index) => (
                                 <Fade timeout={{ enter: 1000, exit: 1000 }} style={ this.state.status === "showing" ? { transitionDelay: `${index * 150}ms`} : {}} direction="right"
-                                in={["showing", "shown"].includes(this.state.status)} key={index}>
-                                    <TableRow key={"c"+index.toString()}>
-                                        <TableCell sx={{ fontSize: this.state.fontSize, ...(score.green ? styles.advancing : {}), ...styles.ranking, ...styles.name }} align="right">{this.currentRow + index + 1}</TableCell>
-                                        <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell, ...styles.name }}>{score.name}</TableCell>
-                                        {[...Array(this.state.stages)].map((_, i) => <TableCell sx={{ fontSize: this.state.fontSize, color: score.gray.includes(score.times[i]) ? "gray" : "", ...styles.cell }} key={"r"+index.toString()+i.toString()} align="right">{this.floatToTime(score.times[i])}</TableCell>)}
-                                        <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} align="right">{score.avg}</TableCell>
+                                in={["showing", "shown"].includes(this.state.status)} key={"F"+score.name}>
+                                    <TableRow>
+                                        <TableCell sx={{ fontSize: this.state.fontSize, ...(score.green ? styles.advancing : {}), ...styles.ranking, ...styles.name }} align="right" key={"P"+score.name}>{score.place}</TableCell>
+                                        <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell, ...styles.name }} key={"N"+score.name}>{score.name}</TableCell>
+                                        {
+                                            [...Array(this.state.stages)].map((_, i) =>
+                                                <TableCell
+                                                    sx={{ fontSize: this.state.fontSize, color: score.gray.includes(score.times[i]) ? "gray" : "", ...styles.cell }}
+                                                    align="right"
+                                                    key={"T"+i+score.name}
+                                                >{this.floatToTime(score.times[i])}</TableCell>
+                                        )}
+                                        <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} align="right" key={"A"+score.name}>{score.avg}</TableCell>
                                     </TableRow>
                                 </Fade>
                               ))

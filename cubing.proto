@@ -5,7 +5,8 @@ message SortScoresResponse {
     repeated double times = 2;
     string avg = 3;
     repeated uint32 gray = 4;
-    bool green = 5;
+    uint32 place = 5;
+    bool green = 6;
 }
 
 message ScoresResponse {

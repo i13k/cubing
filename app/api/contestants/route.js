@@ -28,7 +28,7 @@ export async function DELETE(rq) {
     const database = client.db("cubing");
     const scores = database.collection("scores");
 
-    await scores.findOneAndDelete({ name: name });
+    await scores.deleteOne({ name: name });
     await client.close();
 
     return new Response(null, { status: 204 });
@@ -51,7 +51,7 @@ export async function PATCH(rq) {
     for (let i = 0; i < req.times.length; ++i)
         req.times[i] = parseNum(req.times[i]);
 
-    await scores.findOneAndUpdate({ name: req.name }, { $set: { times: req.times } });
+    await scores.updateOne({ name: req.name }, { $set: { times: req.times } });
     await client.close();
 
     return new Response(null, { status: 204 });

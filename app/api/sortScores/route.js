@@ -36,12 +36,13 @@ export async function GET(rq) {
         for (let j = 0; j < scores[i].times.length; ++j)
             if (scores[i].times[j] === 0)
                 ++DNFs;
+        
         switch (regInfo.type) {
             case "A":
                 if (DNFs > 1) {
                     scores[i].avg = "DNF";
-                    scores[i].sum = Infinity;
-                    scores[i].gray = scores[i].times.filter(time => time !== 0);
+                    scores[i].sum = new Decimal(Infinity);
+                    scores[i].gray = [0];
                 } else {
                     let min = scores[i].times[0], max = scores[i].times[0], removedMin = false, removedMax = false, timesCorr = [];
 
@@ -76,21 +77,20 @@ export async function GET(rq) {
                     
                     scores[i].gray = [min, max];
                     scores[i].avg = floatToTime(scores[i].sum.div(regInfo.stages - 2));
-                    scores[i].sum = parseFloat(scores[i].sum.toString());
                 }
                 break;
             case "B":
                 let newTimes = scores[i].times.filter(time => time !== 0);
                 if (newTimes.length === 0) {
                     scores[i].avg = "DNF";
-                    scores[i].sum = Infinity;
+                    scores[i].sum = new Decimal(Infinity);
                     scores[i].gray = [0];
                 } else {
                     let min = newTimes[0];
                     newTimes.slice(1).map(time => {
                         if (time < min) min = time;
                     });
-                    scores[i].sum = min;
+                    scores[i].sum = new Decimal(min);
                     scores[i].avg = floatToTime(min);
                     scores[i].gray = scores[i].times.filter(time => time !== min);
                 }
@@ -98,7 +98,7 @@ export async function GET(rq) {
             case "M":
                 if (DNFs > 0) {
                     scores[i].avg = "DNF";
-                    scores[i].sum = Infinity;
+                    scores[i].sum = new Decimal(Infinity);
                     scores[i].gray = [0];
                 } else {
                     scores[i].sum = new Decimal(0);
@@ -107,25 +107,29 @@ export async function GET(rq) {
                     });
                     
                     scores[i].avg = floatToTime(scores[i].sum.div(regInfo.stages));
-                    scores[i].sum = parseFloat(scores[i].sum.toString());
                     scores[i].gray = [];
                 }
                 break;
         }
     }
 
-    scores = scores.sort((a, b) => a.sum - b.sum);
+    scores = scores.sort((a, b) => a.sum.sub(b.sum));
 
     for (let i = 0; i < scores.length; ++i) {
-        scores[i].green = i < regInfo.qualification;
-        delete scores[i].sum;
+        if (i === 0) scores[i].place = 1;
+        else if (scores[i].sum.eq(scores[i - 1].sum)) scores[i].place = scores[i - 1].place;
+        else scores[i].place = i + 1;
+
+        scores[i].green = scores[i].place <= regInfo.qualification;
     }
+
+    for (let i = 0; i < scores.length; ++i) delete scores[i].sum;
 
     const isDelete = new URL(rq.url).searchParams.get("delete");
     if (isDelete === "true") {
         for (let i = 0; i < scores.length; ++i)
             if (!scores[i].green)
-                await database.collection("scores").findOneAndDelete({ name: scores[i].name });
+                await database.collection("scores").deleteOne({ name: scores[i].name });
         
         await database.collection("scores").updateMany({ }, { $set: { times: [] } });
     }

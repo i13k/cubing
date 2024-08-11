@@ -19,6 +19,7 @@ $root.SortScoresResponse = (function() {
      * @property {Array.<number>|null} [times] SortScoresResponse times
      * @property {string|null} [avg] SortScoresResponse avg
      * @property {Array.<number>|null} [gray] SortScoresResponse gray
+     * @property {number|null} [place] SortScoresResponse place
      * @property {boolean|null} [green] SortScoresResponse green
      */
 
@@ -72,6 +73,14 @@ $root.SortScoresResponse = (function() {
     SortScoresResponse.prototype.gray = $util.emptyArray;
 
     /**
+     * SortScoresResponse place.
+     * @member {number} place
+     * @memberof SortScoresResponse
+     * @instance
+     */
+    SortScoresResponse.prototype.place = 0;
+
+    /**
      * SortScoresResponse green.
      * @member {boolean} green
      * @memberof SortScoresResponse
@@ -119,8 +128,10 @@ $root.SortScoresResponse = (function() {
                 writer.uint32(message.gray[i]);
             writer.ldelim();
         }
+        if (message.place != null && Object.hasOwnProperty.call(message, "place"))
+            writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.place);
         if (message.green != null && Object.hasOwnProperty.call(message, "green"))
-            writer.uint32(/* id 5, wireType 0 =*/40).bool(message.green);
+            writer.uint32(/* id 6, wireType 0 =*/48).bool(message.green);
         return writer;
     };
 
@@ -186,6 +197,10 @@ $root.SortScoresResponse = (function() {
                     break;
                 }
             case 5: {
+                    message.place = reader.uint32();
+                    break;
+                }
+            case 6: {
                     message.green = reader.bool();
                     break;
                 }
@@ -244,6 +259,9 @@ $root.SortScoresResponse = (function() {
                 if (!$util.isInteger(message.gray[i]))
                     return "gray: integer[] expected";
         }
+        if (message.place != null && message.hasOwnProperty("place"))
+            if (!$util.isInteger(message.place))
+                return "place: integer expected";
         if (message.green != null && message.hasOwnProperty("green"))
             if (typeof message.green !== "boolean")
                 return "green: boolean expected";
@@ -280,6 +298,8 @@ $root.SortScoresResponse = (function() {
             for (var i = 0; i < object.gray.length; ++i)
                 message.gray[i] = object.gray[i] >>> 0;
         }
+        if (object.place != null)
+            message.place = object.place >>> 0;
         if (object.green != null)
             message.green = Boolean(object.green);
         return message;
@@ -305,6 +325,7 @@ $root.SortScoresResponse = (function() {
         if (options.defaults) {
             object.name = "";
             object.avg = "";
+            object.place = 0;
             object.green = false;
         }
         if (message.name != null && message.hasOwnProperty("name"))
@@ -321,6 +342,8 @@ $root.SortScoresResponse = (function() {
             for (var j = 0; j < message.gray.length; ++j)
                 object.gray[j] = message.gray[j];
         }
+        if (message.place != null && message.hasOwnProperty("place"))
+            object.place = message.place;
         if (message.green != null && message.hasOwnProperty("green"))
             object.green = message.green;
         return object;
