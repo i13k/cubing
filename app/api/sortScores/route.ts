@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
-const Decimal = require("decimal.js").Decimal;
-const { ArraySortScoreResponse } = require("@/app/messages");
+const { Decimal } = require("decimal.js");
+import { ArraySortScoreResponse } from "@/app/messages";
 
 const floatToTime = (tseconds: number | null | undefined | typeof Decimal): string => {
     if (typeof tseconds === "undefined" || tseconds === null) return "";
@@ -20,6 +20,7 @@ const floatToTime = (tseconds: number | null | undefined | typeof Decimal): stri
 };
 
 export async function GET(rq: Request) {
+    Decimal.set({ precision: 7 });
     const client = new MongoClient("mongodb://localhost:27017/");
     await client.connect();
 

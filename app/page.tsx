@@ -1,5 +1,5 @@
 "use client";
-import { React, Component } from 'react';
+import { Component } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -10,6 +10,7 @@ import Decimal from 'decimal.js';
 import { green } from '@mui/material/colors';
 import { Fade } from '@mui/material';
 import { ArraySortScoreResponse } from './messages';
+import { NextMiddleware } from 'next/server';
 
 const getNumberOfRows = () => {// table header   row height
     if (typeof window === "undefined") return 0;
@@ -41,15 +42,26 @@ const styles = {
     }
 };
 
+interface ScoresComponentState {
+    scores: any[];
+    stages: number;
+    fontSize: number;
+    status: string;
+}
+
 class ScoresComponent extends Component {
+    executed: boolean;
+    running: boolean;
+    currentRow: number;
+    state: ScoresComponentState;
     constructor(props) {
         super(props);
         this.state = { scores: [], stages: 0, fontSize: 48, status: "shown" };
         this.executed = false;
         this.running = true;
     }
-    psetState(newState) { return new Promise(resolve => this.setState(newState, resolve)); }
-    async refreshData() {
+    psetState(newState) { return new Promise<void>(resolve => this.setState(newState, resolve)); }
+    async refreshData(): Promise<void> {
         const regInfoFetch = await fetch("/api/info");
         const regInfo = await regInfoFetch.json();
 
@@ -103,7 +115,7 @@ class ScoresComponent extends Component {
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.currentRow = 0;
         this.running = true;
         /*this.interval = setInterval(() => {
@@ -119,20 +131,21 @@ class ScoresComponent extends Component {
                 status: this.state.status
             });
         }, 3000);*/
+        Decimal.set({ precision: 7 });
         this.mainLoop();
     }
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.running = false;
     }
 
-    floatToTime(tseconds) {
+    floatToTime(tseconds: undefined | null | Decimal | string): string {
         if (typeof tseconds === "undefined" || tseconds === null) return "";
         if (tseconds.toString() === "0") return "DNF";
         if (!(tseconds instanceof Decimal)) tseconds = new Decimal(tseconds);
 
-        const minutes = tseconds.div(60).floor();
-        let seconds = tseconds.sub(minutes.mul(60));
-        let millis = seconds.sub(seconds.floor()).mul(1000).round().toString();
+        const minutes: Decimal = tseconds.div(60).floor();
+        let seconds: Decimal | string = tseconds.sub(minutes.mul(60));
+        let millis: string = seconds.sub(seconds.floor()).mul(1000).round().toString();
         seconds = seconds.floor().toString();
 
         if (seconds.length == 1) seconds = "0" + seconds;
@@ -158,7 +171,7 @@ class ScoresComponent extends Component {
                       <TableBody>
                           {
                               this.state.scores.slice(this.currentRow, this.currentRow + getNumberOfRows()).map((score, index) => (
-                                <Fade timeout={{ enter: 1000, exit: 1000 }} style={ this.state.status === "showing" ? { transitionDelay: `${index * 150}ms`} : {}} direction="right"
+                                <Fade timeout={{ enter: 1000, exit: 1000 }} style={ this.state.status === "showing" ? { transitionDelay: `${index * 150}ms`} : {}}
                                 in={["showing", "shown"].includes(this.state.status)} key={"F"+score.name}>
                                     <TableRow>
                                         <TableCell sx={{ fontSize: this.state.fontSize, ...(score.green ? styles.advancing : {}), ...styles.ranking, ...styles.name }} align="right" key={"P"+score.name}>{score.place}</TableCell>

@@ -18,7 +18,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { ArrayScoresResponse } from '@/app/messages';
 
-const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
+const TextMaskCustom = React.forwardRef(function TextMaskCustom(props: any, ref) {
     const { onChange, ...other } = props;
     return (
         <IMaskInput
@@ -31,7 +31,23 @@ const TextMaskCustom = React.forwardRef(function TextMaskCustom(props, ref) {
     );
 });
 
+interface Score {
+    name: string;
+    times: number[];
+}
+
+interface JudgeAdminState {
+    value: number;
+    stages: number;
+    times: string[];
+    contestant: string;
+    names: Score[];
+}
+
 class JudgeAdminComponent extends React.Component {
+    executed: boolean;
+    running: boolean;
+    state: JudgeAdminState;
     constructor(props) {
         super(props);
         this.state = { value: 0, stages: 0, times: [], contestant: "", names: [] };
@@ -48,8 +64,8 @@ class JudgeAdminComponent extends React.Component {
             names: this.state.names
         });
         if (v === 1) {
-            const scoresFetch = await fetch("/api/scores");
-            const scoresRaw = await scoresFetch.text();
+            const scoresFetch: Response = await fetch("/api/scores");
+            const scoresRaw: string = await scoresFetch.text();
             let scoresJson = ArrayScoresResponse.decode(new Uint8Array(scoresRaw.split("").map(c => c.charCodeAt(0)))).responses;
             scoresJson = scoresJson.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -67,7 +83,7 @@ class JudgeAdminComponent extends React.Component {
     }
 
     changeTime (e) {
-        let q = this.state.times;
+        let q: string[] = this.state.times;
         q[e.target.name.substring(1)] = e.target.value;
         this.setState({
             value: this.state.value,
@@ -106,7 +122,7 @@ class JudgeAdminComponent extends React.Component {
                     </FormControl>
                 ))}
                 </Stack>
-                <Button variant="contained" color="success" align="center" onClick={this.updateScores.bind(this)}>Zatwierdź</Button>
+                <Button variant="contained" color="success" onClick={this.updateScores.bind(this)}>Zatwierdź</Button>
             </div>
 
             <div style={{ display: (this.state.value === 1) ? "block" : "none", paddingTop: 16 }}>
@@ -118,7 +134,7 @@ class JudgeAdminComponent extends React.Component {
                                     <TableRow key={name.name} sx={{ backgroundColor: this.state.contestant === name.name ? "blue" : "" }}>
                                         <TableCell key={"n"+name.name}>{name.name}</TableCell>
                                         <TableCell key={"d"+name.name}>
-                                            <IconButton size="medium" onClick={(e, v) => {this.setState({value: this.state.value, stages: this.state.stages, times: new Array(this.state.stages).fill(""), contestant: name.name, names: this.state.names});}} key={"i"+name.name}>
+                                            <IconButton size="medium" onClick={e => {this.setState({value: this.state.value, stages: this.state.stages, times: new Array(this.state.stages).fill(""), contestant: name.name, names: this.state.names});}} key={"i"+name.name}>
                                                 <CheckIcon key={"c"+name.name} fontSize="medium" color="info" />
                                             </IconButton>
                                         </TableCell>
