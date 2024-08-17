@@ -1,11 +1,17 @@
-{
-    "currentRoute": "/",
-    "room": "Rejestracja trwa w sali 306 do godziny 12:00.",
-    "round": "3",
-    "people": ["Jan Kowalski", "Mirosław Zelent", "Józef Stalin", "Mikołaj Marciniak"],
-    "additionalRoundInfo": "Runda finałowa - obcinane są najlepszy i najgorszy wynik każdego zawodnika.",
-    "stages": 3,
-    "type": "M",
-    "fontSize": 48,
-    "qualification": 20
-}
+[{
+  "_id": {
+    "$oid": "66811c4c238db5735c3e4e06"
+  },
+  "currentRoute": "/",
+  "room": "Rejestracja trwa w sali 306 do godziny 12:00.",
+  "round": "3",
+  "people": [
+    "Mikołaj Marciniak",
+    "Józef Stalin"
+  ],
+  "additionalRoundInfo": "Runda finałowa - obcinane są najlepszy i najgorszy wynik każdego zawodnika.",
+  "stages": 3,
+  "type": "M",
+  "fontSize": 48,
+  "qualification": 20
+}]

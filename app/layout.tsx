@@ -1,9 +1,9 @@
 "use client";
 import "./globals.css";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, Theme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-const darkTheme = createTheme({ palette: { mode: "dark" } });
+const darkTheme: Theme = createTheme({ palette: { mode: "dark" } });
 
 export default function RootLayout({ children }) {
   return (
