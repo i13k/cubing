@@ -5,5 +5,3 @@
 * add structure:
   event -> puzzle -> round
 * bug [!!]: scoreboard sometimes shows people who have been removed
-* remove floattotime from /
-* optimize conversion by storing strings of times (e.g. "0:32.432") in DB

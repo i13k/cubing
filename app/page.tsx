@@ -10,7 +10,6 @@ import Decimal from 'decimal.js';
 import { green } from '@mui/material/colors';
 import { Fade } from '@mui/material';
 import { ArraySortScoreResponse } from './messages';
-import { NextMiddleware } from 'next/server';
 
 const getNumberOfRows = () => {// table header   row height
     if (typeof window === "undefined") return 0;
@@ -138,23 +137,6 @@ class ScoresComponent extends Component {
         this.running = false;
     }
 
-    floatToTime(tseconds: undefined | null | Decimal | string): string {
-        if (typeof tseconds === "undefined" || tseconds === null) return "";
-        if (tseconds.toString() === "0") return "DNF";
-        if (!(tseconds instanceof Decimal)) tseconds = new Decimal(tseconds);
-
-        const minutes: Decimal = tseconds.div(60).floor();
-        let seconds: Decimal | string = tseconds.sub(minutes.mul(60));
-        let millis: string = seconds.sub(seconds.floor()).mul(1000).round().toString();
-        seconds = seconds.floor().toString();
-
-        if (seconds.length == 1) seconds = "0" + seconds;
-        if (millis.length == 1) millis = "00" + millis;
-        else if (millis.length == 2) millis = "0" + millis;
-        
-        return minutes.toString() + ":" + seconds + "." + millis;
-    }
-    
     render() {
         return (
             <main style={{ width: "100%" }}>
@@ -182,7 +164,7 @@ class ScoresComponent extends Component {
                                                     sx={{ fontSize: this.state.fontSize, color: score.gray.includes(score.times[i]) ? "gray" : "", ...styles.cell }}
                                                     align="right"
                                                     key={"T"+i+score.name}
-                                                >{this.floatToTime(score.times[i])}</TableCell>
+                                                >{score.times[i]}</TableCell>
                                         )}
                                         <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} align="right" key={"A"+score.name}>{score.avg}</TableCell>
                                     </TableRow>

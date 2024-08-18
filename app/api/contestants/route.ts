@@ -13,7 +13,7 @@ export async function PUT(rq: Request) {
         return new Response(null, { status: 409 });
     }
     
-    await scores.insertOne({ name: name, times: [] });
+    await scores.insertOne({ name: name, times: [], timesString: [] });
 
     await client.close();
     return new Response(null, { status: 204 });
@@ -49,9 +49,10 @@ export async function PATCH(rq: Request) {
     await client.connect();
 
     req.times.forEach(time => { times.push(parseTimeString(time)); });
+    req.times.forEach((time, i) => { if (time === "0:00.000") req.times[i] = "DNF"; });
 
     await client.db("cubing").collection("scores")
-        .updateOne({ name: req.name }, { $set: { times: times } });
+        .updateOne({ name: req.name }, { $set: { times: times, timesString: req.times } });
     await client.close();
 
     return new Response(null, { status: 204 });

@@ -16,9 +16,9 @@ $root.SortScoresResponse = (function() {
      * @exports ISortScoresResponse
      * @interface ISortScoresResponse
      * @property {string|null} [name] SortScoresResponse name
-     * @property {Array.<number>|null} [times] SortScoresResponse times
+     * @property {Array.<string>|null} [times] SortScoresResponse times
      * @property {string|null} [avg] SortScoresResponse avg
-     * @property {Array.<number>|null} [gray] SortScoresResponse gray
+     * @property {Array.<string>|null} [gray] SortScoresResponse gray
      * @property {number|null} [place] SortScoresResponse place
      * @property {boolean|null} [green] SortScoresResponse green
      */
@@ -50,7 +50,7 @@ $root.SortScoresResponse = (function() {
 
     /**
      * SortScoresResponse times.
-     * @member {Array.<number>} times
+     * @member {Array.<string>} times
      * @memberof SortScoresResponse
      * @instance
      */
@@ -66,7 +66,7 @@ $root.SortScoresResponse = (function() {
 
     /**
      * SortScoresResponse gray.
-     * @member {Array.<number>} gray
+     * @member {Array.<string>} gray
      * @memberof SortScoresResponse
      * @instance
      */
@@ -114,20 +114,14 @@ $root.SortScoresResponse = (function() {
             writer = $Writer.create();
         if (message.name != null && Object.hasOwnProperty.call(message, "name"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
-        if (message.times != null && message.times.length) {
-            writer.uint32(/* id 2, wireType 2 =*/18).fork();
+        if (message.times != null && message.times.length)
             for (var i = 0; i < message.times.length; ++i)
-                writer.double(message.times[i]);
-            writer.ldelim();
-        }
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.times[i]);
         if (message.avg != null && Object.hasOwnProperty.call(message, "avg"))
             writer.uint32(/* id 3, wireType 2 =*/26).string(message.avg);
-        if (message.gray != null && message.gray.length) {
-            writer.uint32(/* id 4, wireType 2 =*/34).fork();
+        if (message.gray != null && message.gray.length)
             for (var i = 0; i < message.gray.length; ++i)
-                writer.uint32(message.gray[i]);
-            writer.ldelim();
-        }
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.gray[i]);
         if (message.place != null && Object.hasOwnProperty.call(message, "place"))
             writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.place);
         if (message.green != null && Object.hasOwnProperty.call(message, "green"))
@@ -173,12 +167,7 @@ $root.SortScoresResponse = (function() {
             case 2: {
                     if (!(message.times && message.times.length))
                         message.times = [];
-                    if ((tag & 7) === 2) {
-                        var end2 = reader.uint32() + reader.pos;
-                        while (reader.pos < end2)
-                            message.times.push(reader.double());
-                    } else
-                        message.times.push(reader.double());
+                    message.times.push(reader.string());
                     break;
                 }
             case 3: {
@@ -188,12 +177,7 @@ $root.SortScoresResponse = (function() {
             case 4: {
                     if (!(message.gray && message.gray.length))
                         message.gray = [];
-                    if ((tag & 7) === 2) {
-                        var end2 = reader.uint32() + reader.pos;
-                        while (reader.pos < end2)
-                            message.gray.push(reader.uint32());
-                    } else
-                        message.gray.push(reader.uint32());
+                    message.gray.push(reader.string());
                     break;
                 }
             case 5: {
@@ -246,8 +230,8 @@ $root.SortScoresResponse = (function() {
             if (!Array.isArray(message.times))
                 return "times: array expected";
             for (var i = 0; i < message.times.length; ++i)
-                if (typeof message.times[i] !== "number")
-                    return "times: number[] expected";
+                if (!$util.isString(message.times[i]))
+                    return "times: string[] expected";
         }
         if (message.avg != null && message.hasOwnProperty("avg"))
             if (!$util.isString(message.avg))
@@ -256,8 +240,8 @@ $root.SortScoresResponse = (function() {
             if (!Array.isArray(message.gray))
                 return "gray: array expected";
             for (var i = 0; i < message.gray.length; ++i)
-                if (!$util.isInteger(message.gray[i]))
-                    return "gray: integer[] expected";
+                if (!$util.isString(message.gray[i]))
+                    return "gray: string[] expected";
         }
         if (message.place != null && message.hasOwnProperty("place"))
             if (!$util.isInteger(message.place))
@@ -287,7 +271,7 @@ $root.SortScoresResponse = (function() {
                 throw TypeError(".SortScoresResponse.times: array expected");
             message.times = [];
             for (var i = 0; i < object.times.length; ++i)
-                message.times[i] = Number(object.times[i]);
+                message.times[i] = String(object.times[i]);
         }
         if (object.avg != null)
             message.avg = String(object.avg);
@@ -296,7 +280,7 @@ $root.SortScoresResponse = (function() {
                 throw TypeError(".SortScoresResponse.gray: array expected");
             message.gray = [];
             for (var i = 0; i < object.gray.length; ++i)
-                message.gray[i] = object.gray[i] >>> 0;
+                message.gray[i] = String(object.gray[i]);
         }
         if (object.place != null)
             message.place = object.place >>> 0;
@@ -333,7 +317,7 @@ $root.SortScoresResponse = (function() {
         if (message.times && message.times.length) {
             object.times = [];
             for (var j = 0; j < message.times.length; ++j)
-                object.times[j] = options.json && !isFinite(message.times[j]) ? String(message.times[j]) : message.times[j];
+                object.times[j] = message.times[j];
         }
         if (message.avg != null && message.hasOwnProperty("avg"))
             object.avg = message.avg;

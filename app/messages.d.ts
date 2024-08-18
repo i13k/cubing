@@ -7,13 +7,13 @@ export interface ISortScoresResponse {
     name?: (string|null);
 
     /** SortScoresResponse times */
-    times?: (number[]|null);
+    times?: (string[]|null);
 
     /** SortScoresResponse avg */
     avg?: (string|null);
 
     /** SortScoresResponse gray */
-    gray?: (number[]|null);
+    gray?: (string[]|null);
 
     /** SortScoresResponse place */
     place?: (number|null);
@@ -35,13 +35,13 @@ export class SortScoresResponse implements ISortScoresResponse {
     public name: string;
 
     /** SortScoresResponse times. */
-    public times: number[];
+    public times: string[];
 
     /** SortScoresResponse avg. */
     public avg: string;
 
     /** SortScoresResponse gray. */
-    public gray: number[];
+    public gray: string[];
 
     /** SortScoresResponse place. */
     public place: number;

@@ -2,9 +2,9 @@ syntax = "proto3";
 
 message SortScoresResponse {
     string name = 1;
-    repeated double times = 2;
+    repeated string times = 2;
     string avg = 3;
-    repeated uint32 gray = 4;
+    repeated string gray = 4;
     uint32 place = 5;
     bool green = 6;
 }
