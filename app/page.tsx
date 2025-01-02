@@ -90,7 +90,8 @@ class ScoresComponent extends Component {
 
     async mainLoop() {
         if (this.executed) return;
-        else this.executed = true;
+        
+        this.executed = true;
         await this.refreshData();
 
         while (this.running) {

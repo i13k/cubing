@@ -23,15 +23,19 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": [
+        "./*"
+      ]
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "app/messages.js"  ],
+    "**/*.tsx",
+    "app/messages.js"
+  ],
   "exclude": [
     "node_modules"
   ]

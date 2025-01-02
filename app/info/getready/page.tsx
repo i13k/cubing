@@ -14,7 +14,7 @@ interface RozstawienieState {
     round: string;
     people: string[];
     fontSize: number;
-    additional?: string;
+    announcement?: string;
 }
 
 class RozstawienieComponent extends React.Component {
@@ -34,7 +34,7 @@ class RozstawienieComponent extends React.Component {
         this.setState({
             round: regInfo.round,
             people: regInfo.people,
-            additional: regInfo.additionalRoundInfo,
+            announcement: regInfo.announcement,
             fontSize: regInfo.fontSize
         });
     }
@@ -45,7 +45,6 @@ class RozstawienieComponent extends React.Component {
     componentWillUnmount() {
         clearInterval(this.interval);
     }
-    
     render() {
         return (
             <main className="flex min-h-screen flex-col items-center p-24">
@@ -75,7 +74,7 @@ class RozstawienieComponent extends React.Component {
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
-                                {this.state.additional && (<p><InfoIcon color="info" sx={{ fontSize: 32 }} />&nbsp;{this.state.additional}</p>)}
+                                {this.state.announcement && (<p><InfoIcon color="info" sx={{ fontSize: 32 }} />&nbsp;{this.state.announcement}</p>)}
                             </td>
                         </tr>
                     </tbody>

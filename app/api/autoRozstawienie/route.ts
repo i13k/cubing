@@ -14,7 +14,7 @@ export async function GET(_: Request) {
     const db: mongo.Db = client.db("cubing");
 
     const contestantsCursor: mongo.FindCursor =
-        await db.collection("scores").find({ times: [] }, { projection: { _id: 0, times: 0 } });
+        await db.collection("scores").find({ times: [] }, { projection: { _id: 0, times: 0, timesString: 0 } });
     
     const contestants: Contestant[] = await contestantsCursor.toArray();
     let names: string[] = [];

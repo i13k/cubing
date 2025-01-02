@@ -5,7 +5,7 @@ import { ArrayScoresResponse } from '@/app/messages';
 
 interface InfoCenterState {
     peopleCount: string;
-    room: string;
+    announcement: string;
     peopleText: string;
 }
 
@@ -14,7 +14,7 @@ class InfoCenterComponent extends React.Component {
     interval: any;
     constructor(props) {
         super(props);
-        this.state = { peopleCount: "", room: "", peopleText: "" };
+        this.state = { peopleCount: "", announcement: "", peopleText: "" };
     }
     async refreshData() {
         const regInfoFetch = await fetch("/api/info");
@@ -27,7 +27,7 @@ class InfoCenterComponent extends React.Component {
         const scoresRaw = await scoresFetch.text();
         const scores = ArrayScoresResponse.decode(new Uint8Array(scoresRaw.split("").map(c => c.charCodeAt(0)))).responses;
 
-        const lastDigit: string = scores.length.toString()[scores.length.toString().length - 1];
+        const lastDigit = scores.length.toString()[scores.length.toString().length - 1];
         let text: string = "";
 
         switch (lastDigit) {
@@ -42,7 +42,7 @@ class InfoCenterComponent extends React.Component {
         }
 
         this.setState({
-            room: regInfo.room,
+            announcement: regInfo.announcement,
             peopleCount: scores.length.toString(),
             peopleText: text
         });
@@ -64,7 +64,7 @@ class InfoCenterComponent extends React.Component {
                             <td style={{ verticalAlign: "top" }}><InfoIcon color="info" sx={{ fontSize: 256 }} /></td>
                             <td style={{ verticalAlign: "top", fontSize: 32 }}>
                                 <p><b style={{ fontSize: 64 }}>Rejestracja</b></p>
-                                <p>{ this.state.room }</p>
+                                <p>{ this.state.announcement }</p>
                                 <p><b style={{ fontSize: 56 }}>{ this.state.peopleCount }</b>&nbsp;{ this.state.peopleText }</p>
                             </td>
                         </tr>

@@ -25,6 +25,7 @@ export async function DELETE(rq: Request) {
     await client.connect();
 
     await client.db("cubing").collection("scores").deleteOne({ name: name });
+    await client.db("cubing").collection("cache").updateOne({ }, { $set: { cacheValid: false } });
     await client.close();
 
     return new Response(null, { status: 204 });
@@ -53,6 +54,7 @@ export async function PATCH(rq: Request) {
 
     await client.db("cubing").collection("scores")
         .updateOne({ name: req.name }, { $set: { times: times, timesString: req.times } });
+    await client.db("cubing").collection("cache").updateOne({ }, { $set: { cacheValid: false } });
     await client.close();
 
     return new Response(null, { status: 204 });
