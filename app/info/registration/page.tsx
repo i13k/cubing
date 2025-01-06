@@ -2,6 +2,7 @@
 import InfoIcon from '@mui/icons-material/Info';
 import React, { Component } from 'react';
 import { ArrayScoresResponse } from '@/app/messages';
+import Constants from '@/app/constants';
 
 interface InfoCenterState {
     peopleCount: string;
@@ -49,7 +50,7 @@ class InfoCenterComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.refreshData(), 3000);
+        this.interval = setInterval(() => this.refreshData(), Constants.dataRefreshInterval);
     }
     componentWillUnmount() {
         clearInterval(this.interval);

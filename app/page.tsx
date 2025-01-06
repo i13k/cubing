@@ -9,7 +9,8 @@ import TableRow from '@mui/material/TableRow';
 import Decimal from 'decimal.js';
 import { green } from '@mui/material/colors';
 import { Fade } from '@mui/material';
-import { ArraySortScoreResponse } from './messages';
+import { ArraySortScoreResponse } from '@/app/messages';
+import Constants from '@/app/constants';
 
 const getNumberOfRows = () => {// table header   row height
     if (typeof window === "undefined") return 0;
@@ -44,7 +45,6 @@ const styles = {
 interface ScoresComponentState {
     scores: any[];
     stages: number;
-    fontSize: number;
     status: string;
 }
 
@@ -55,7 +55,7 @@ class ScoresComponent extends Component {
     state: ScoresComponentState;
     constructor(props) {
         super(props);
-        this.state = { scores: [], stages: 0, fontSize: 48, status: "shown" };
+        this.state = { scores: [], stages: 0, status: "shown" };
         this.executed = false;
         this.running = true;
     }
@@ -74,7 +74,6 @@ class ScoresComponent extends Component {
         await this.psetState({
             scores: scores,
             stages: regInfo.stages,
-            fontSize: regInfo.fontSize,
             status: this.state.status
         });
     }
@@ -83,7 +82,6 @@ class ScoresComponent extends Component {
         await this.psetState({
             scores: this.state.scores,
             stages: this.state.stages,
-            fontSize: this.state.fontSize,
             status: status
         });
     }
@@ -95,15 +93,13 @@ class ScoresComponent extends Component {
         await this.refreshData();
 
         while (this.running) {
-
             await this.setStatus("showing");
-            await sleep(1000);
+            await sleep(Constants.showingTime);
 
             await this.setStatus("shown");
-            await sleep(2000);
+            await sleep(Constants.shownTime);
 
             await this.setStatus("hiding");
-            await sleep(1000);
 
             this.currentRow += getNumberOfRows();
             if (this.currentRow >= this.state.scores.length) {
@@ -111,7 +107,7 @@ class ScoresComponent extends Component {
                 await this.refreshData();
             }
 
-            await sleep(1000);
+            await sleep(Constants.hidingTime);
         }
     }
 
@@ -145,10 +141,10 @@ class ScoresComponent extends Component {
                   <Table sx={{ tableLayout: "fixed", width: "100%" }}>
                       <TableHead>
                           <TableRow key="h">
-                              <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell, ...styles.ranking }} align="right">#</TableCell>
-                              <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell, ...styles.name }}>uczestnik</TableCell>
-                              {[...Array(this.state.stages)].map((_, i) => <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} align="right" key={"H"+i}>{i + 1}</TableCell>)}
-                              <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} align="right">=</TableCell>
+                              <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell, ...styles.ranking }} align="right">#</TableCell>
+                              <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell, ...styles.name }}>uczestnik</TableCell>
+                              {[...Array(this.state.stages)].map((_, i) => <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell }} align="right" key={"H"+i}>{i + 1}</TableCell>)}
+                              <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell }} align="right">=</TableCell>
                           </TableRow>
                       </TableHead>
                       <TableBody>
@@ -157,17 +153,17 @@ class ScoresComponent extends Component {
                                 <Fade timeout={{ enter: 1000, exit: 1000 }} style={ this.state.status === "showing" ? { transitionDelay: `${index * 150}ms`} : {}}
                                 in={["showing", "shown"].includes(this.state.status)} key={"F"+score.name}>
                                     <TableRow>
-                                        <TableCell sx={{ fontSize: this.state.fontSize, ...(score.green ? styles.advancing : {}), ...styles.ranking, ...styles.name }} align="right" key={"P"+score.name}>{score.place}</TableCell>
-                                        <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell, ...styles.name }} key={"N"+score.name}>{score.name}</TableCell>
+                                        <TableCell sx={{ fontSize: Constants.fontSize, ...(score.green ? styles.advancing : {}), ...styles.ranking, ...styles.name }} align="right" key={"P"+score.name}>{score.place}</TableCell>
+                                        <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell, ...styles.name }} key={"N"+score.name}>{score.name}</TableCell>
                                         {
                                             [...Array(this.state.stages)].map((_, i) =>
                                                 <TableCell
-                                                    sx={{ fontSize: this.state.fontSize, color: score.gray.includes(score.times[i]) ? "gray" : "", ...styles.cell }}
+                                                    sx={{ fontSize: Constants.fontSize, color: score.gray.includes(score.times[i]) ? "gray" : "", ...styles.cell }}
                                                     align="right"
                                                     key={"T"+i+score.name}
                                                 >{score.times[i]}</TableCell>
                                         )}
-                                        <TableCell sx={{ fontSize: this.state.fontSize, ...styles.cell }} align="right" key={"A"+score.name}>{score.avg}</TableCell>
+                                        <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell }} align="right" key={"A"+score.name}>{score.avg}</TableCell>
                                     </TableRow>
                                 </Fade>
                               ))

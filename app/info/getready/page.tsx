@@ -9,11 +9,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Constants from '@/app/constants';
 
 interface RozstawienieState {
     round: string;
     people: string[];
-    fontSize: number;
     announcement?: string;
 }
 
@@ -22,7 +22,7 @@ class RozstawienieComponent extends React.Component {
     state: RozstawienieState;
     constructor(props) {
         super(props);
-        this.state = { round: "", people: [], fontSize: 48 };
+        this.state = { round: "", people: [] };
     }
     async refreshData() {
         const regInfoFetch = await fetch("/api/info");
@@ -34,13 +34,12 @@ class RozstawienieComponent extends React.Component {
         this.setState({
             round: regInfo.round,
             people: regInfo.people,
-            announcement: regInfo.announcement,
-            fontSize: regInfo.fontSize
+            announcement: regInfo.announcement
         });
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.refreshData(), 3000);
+        this.interval = setInterval(() => this.refreshData(), Constants.dataRefreshInterval);
     }
     componentWillUnmount() {
         clearInterval(this.interval);
@@ -58,16 +57,16 @@ class RozstawienieComponent extends React.Component {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell sx={{ fontSize: this.state.fontSize }} align="right">st.</TableCell>
-                                                <TableCell sx={{ fontSize: this.state.fontSize }}>uczestnik</TableCell>
+                                                <TableCell sx={{ fontSize: Constants.fontSize }} align="right">st.</TableCell>
+                                                <TableCell sx={{ fontSize: Constants.fontSize }}>uczestnik</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {
                                                 this.state.people.map((person, index) => (
                                                     <TableRow key={person}>
-                                                        <TableCell sx={{ fontSize: this.state.fontSize }} component="th" align="right">{index + 1}</TableCell>
-                                                        <TableCell sx={{ fontSize: this.state.fontSize }}>{person}</TableCell>
+                                                        <TableCell sx={{ fontSize: Constants.fontSize }} component="th" align="right">{index + 1}</TableCell>
+                                                        <TableCell sx={{ fontSize: Constants.fontSize }}>{person}</TableCell>
                                                     </TableRow>
                                                 ))
                                             }
