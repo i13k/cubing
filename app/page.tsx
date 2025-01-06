@@ -100,13 +100,14 @@ class ScoresComponent extends Component {
             await sleep(Constants.shownTime);
 
             await this.setStatus("hiding");
+            await sleep(Constants.hidingTime);
 
             this.currentRow += getNumberOfRows();
             if (this.currentRow >= this.state.scores.length) {
                 this.currentRow = 0;
                 await this.refreshData();
             }
-
+            
             await sleep(Constants.hidingTime);
         }
     }

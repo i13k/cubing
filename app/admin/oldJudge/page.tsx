@@ -19,10 +19,6 @@ import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
-import Fab from '@mui/material/Fab';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import PublishIcon from '@mui/icons-material/Publish';
 import { ArrayScoresResponse } from '@/app/messages';
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props: any, ref) {
@@ -50,23 +46,16 @@ const modalStyle = {
     p: 4
 };
 
-const fabStyle = {
-    position: 'absolute',
-    bottom: 16
-};
-
 export default function JudgeAdmin() {
     const [value, setValue] = React.useState(0);
     const [stages, setStages] = React.useState(0);
     const [times, setTimes] = React.useState([]);
     const [contestant, setContestant] = React.useState("");
     const [names, setNames] = React.useState([]);
-    const [time, setTime] = React.useState("");
-    const [currentStage, setCurrentStage] = React.useState(0);
 
-    const handleChange = async (reset, v: number): Promise<void> => {
+    const handleChange = async (_, v): Promise<void> => {
         setValue(v);
-        if (v == 1) {
+        if (v === 1) {
             const scoresFetch: Response = await fetch("/api/scores");
             const scoresRaw: string = await scoresFetch.text();
             let scoresJson = ArrayScoresResponse.decode(new Uint8Array(scoresRaw.split("").map(c => c.charCodeAt(0)))).responses;
@@ -75,50 +64,18 @@ export default function JudgeAdmin() {
             const regInfoFetch = await fetch("/api/info");
             const regInfo = await regInfoFetch.json();
 
+            setStages(regInfo.stages);
             setNames(scoresJson);
-
-            if (reset == 2 || currentStage == 0) {
-                setStages(regInfo.stages);
-                setCurrentStage(1);
-                setTime("");
-                setTimes([]);
-            }
+            setTimes(new Array(stages).fill("a"))
         }
     }
 
-    const saveTime = (): void => {
-        let timesTemp = times;
-        timesTemp[currentStage-1] = time;
-        setTimes(timesTemp);
-    };
-
-    const previousStage = (): void => {
-        saveTime();
-
-        if (currentStage < 2) return;
-
-        setTime(times[currentStage - 2]);
-        setCurrentStage(currentStage - 1);
-    };
-
-    const nextStage = (): void => {
-        saveTime();
-
-        if (currentStage + 1 > stages) {
-            updateScores();
-            return;
-        }
-        
-        setTime(times[currentStage]);
-        setCurrentStage(currentStage + 1);
-    };
-
-    const updateScores = async(): Promise<void> => {
+    const updateScores = async(_): Promise<void> => {
         await fetch("/api/contestants", {
             method: "PATCH",
             body: JSON.stringify({ name: contestant, times: times })
         });
-        handleChange(2, 1);
+        handleChange(null, 1);
     };
 
     return (
@@ -130,36 +87,29 @@ export default function JudgeAdmin() {
                 </Tabs>
             </AppBar>
 
-            <div style={{ display: (value == 0 && currentStage != 0) ? "block" : "none", paddingTop: 16 }}>
+            <div style={{ display: (value === 0) ? "block" : "none", paddingTop: 16 }}>
                 <p>Wybrany uczestnik: <b>{contestant}</b></p><br />
-                <FormControl variant="standard" key="C">
-                    <InputLabel htmlFor="S" key="L">Wynik ({currentStage})</InputLabel>
-                    <Input inputProps={{ inputMode: "numeric" }} type="text" key="S" value={time} onChange={e => {setTime(e.target.value);}} inputComponent={TextMaskCustom} />
-                </FormControl>
+                <Stack spacing={2} sx={{ pb: 2 }}>
+                {[...Array(stages)].map((_, i) => (
+                    <FormControl variant="standard" key={"C"+i}>
+                        <InputLabel htmlFor={"S"+i} key={"L"+i}>Wynik ({i + 1})</InputLabel>
+                        <Input inputProps={{ inputMode: "numeric" }} type="text" key={"S"+i} onChange={e => {let q=times;q[i]=e.target.value;setTimes(q);}} inputComponent={TextMaskCustom} />
+                    </FormControl>
+                ))}
+                </Stack>
+                <Button variant="contained" color="success" onClick={updateScores}>Zatwierdź</Button>
             </div>
 
-            {(value == 0 && currentStage > 1) && (
-                <Fab sx={{ ...fabStyle, left: 16, display: value == 0 ? "block" : "none" }} color="secondary" onClick={previousStage}>
-                    <NavigateBeforeIcon />
-                </Fab>
-            )}
-
-            {(value == 0 && currentStage != 0) && (
-                <Fab sx={{ ...fabStyle, right: 16, display: value == 0 ? "block" : "none" }} color="primary" onClick={nextStage}>
-                    {currentStage < stages ? (<NavigateNextIcon />) : (<PublishIcon />)}
-                </Fab>
-            )}
-
-            <div style={{ display: value == 1 ? "block" : "none", paddingTop: 16 }}>
+            <div style={{ display: (value === 1) ? "block" : "none", paddingTop: 16 }}>
                 <TableContainer>
                     <Table>
                         <TableBody>
                             {
                                 names.map(name => (
-                                    <TableRow key={name.name} sx={{ backgroundColor: contestant == name.name ? "blue" : "" }}>
+                                    <TableRow key={name.name} sx={{ backgroundColor: contestant === name.name ? "blue" : "" }}>
                                         <TableCell key={"n"+name.name}>{name.name}</TableCell>
                                         <TableCell key={"d"+name.name}>
-                                            <IconButton size="medium" onClick={e => {setTimes(new Array(stages).fill("")); setContestant(name.name);}} key={"i"+name.name}>
+                                            <IconButton size="medium" onClick={e => {setTimes(new Array(stages).fill("")), setContestant(name.name);}} key={"i"+name.name}>
                                                 <CheckIcon key={"c"+name.name} fontSize="medium" color="info" />
                                             </IconButton>
                                         </TableCell>

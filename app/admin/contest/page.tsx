@@ -9,8 +9,8 @@ export default function ContestAdmin() {
     const removeContestants = (_: any): void => {
         fetch("/api/sortScores?delete=true");
     };
-    const autoRozstawienie = (_: any): void => {
-        fetch("/api/autoRozstawienie");
+    const autoGrouping = (_: any): void => {
+        fetch("/api/autoGrouping");
     };
     return (
         <main className="flex min-h-screen flex-col items-center">
@@ -24,8 +24,8 @@ export default function ContestAdmin() {
                 <Button variant="contained" color="error" onClick={removeContestants}>Obetnij osoby/następna runda</Button>
             </div>
 
-            <div style={{ paddingBottom: 2 }}>
-                <Button variant="contained" onClick={autoRozstawienie}>Auto-rozstawienie</Button>
+            <div style={{ paddingTop: 16 }}>
+                <Button variant="contained" onClick={autoGrouping}>Auto-rozstawienie</Button>
             </div>
         </main>
     );

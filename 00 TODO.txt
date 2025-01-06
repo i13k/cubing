@@ -1,11 +1,8 @@
-* custom Infomessage screen,
+* custom Infomessage screen, (drukowanie dyplomów, etc.)
 * random numbers screen !!!,
 * use participant ID
-* error message in Remote Score entry when not enough is entered/wrong format!
 * add structure:
   event -> puzzle -> round
 * bug [!!]: scoreboard sometimes shows people who have been removed
-* bug [!!]: scoreboard doesn't work on first load
-* use 1/10 millisecond as base (ie. 2:32.423 => 152423)
-* fix / page not loading for the first time [annoyance; not really needed]
-* bug [!!]: /api/contestants DOESN't check whether the sent array has correct length/values
+* use millisecond as base (ie. 2:32.423 => 152423)
+// * bug: pages don't work on first load -- probably because of HMR/compilation in dev mode

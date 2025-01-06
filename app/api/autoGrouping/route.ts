@@ -1,6 +1,5 @@
 import * as mongo from "mongodb";
-
-const PEOPLE_PER_GROUP: number = 6;
+import Constants from "@/app/constants";
 
 interface Contestant {
     name: string;
@@ -19,10 +18,11 @@ export async function GET(_: Request) {
     const contestants: Contestant[] = await contestantsCursor.toArray();
     let names: string[] = [];
 
-    for (let i: number = 0; i < PEOPLE_PER_GROUP; ++i)
+    for (let i: number = 0; i < Constants.peoplePerGroup; ++i)
         contestants[i] && names.push(contestants[i].name);
 
     await db.collection("info").updateOne({ }, { $set: { people: names, currentRoute: "/info/getready" } });
+    await client.close();
     return new Response(null, { status: 204 });
 }
 

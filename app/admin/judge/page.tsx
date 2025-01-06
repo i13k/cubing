@@ -2,7 +2,6 @@
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -13,13 +12,20 @@ import { IMaskInput } from 'react-imask';
 import IconButton from '@mui/material/IconButton';
 import CheckIcon from '@mui/icons-material/Check';
 import Input from '@mui/material/Input';
-import Stack from '@mui/material/Stack';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Typography from '@mui/material/Typography';
+import Fab from '@mui/material/Fab';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import PublishIcon from '@mui/icons-material/Publish';
 import { ArrayScoresResponse } from '@/app/messages';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import Constants from "@/app/constants";
 
 const TextMaskCustom = React.forwardRef(function TextMaskCustom(props: any, ref) {
     const { onChange, ...other } = props;
@@ -46,16 +52,24 @@ const modalStyle = {
     p: 4
 };
 
+const fabStyle = {
+    position: 'absolute',
+    bottom: 16
+};
+
 export default function JudgeAdmin() {
     const [value, setValue] = React.useState(0);
     const [stages, setStages] = React.useState(0);
     const [times, setTimes] = React.useState([]);
     const [contestant, setContestant] = React.useState("");
     const [names, setNames] = React.useState([]);
+    const [time, setTime] = React.useState("");
+    const [currentStage, setCurrentStage] = React.useState(0);
+    const [modalOpen, setModalOpen] = React.useState(false);
 
-    const handleChange = async (_, v): Promise<void> => {
+    const handleChange = async (reset, v: number): Promise<void> => {
         setValue(v);
-        if (v === 1) {
+        if (v == 1) {
             const scoresFetch: Response = await fetch("/api/scores");
             const scoresRaw: string = await scoresFetch.text();
             let scoresJson = ArrayScoresResponse.decode(new Uint8Array(scoresRaw.split("").map(c => c.charCodeAt(0)))).responses;
@@ -64,18 +78,59 @@ export default function JudgeAdmin() {
             const regInfoFetch = await fetch("/api/info");
             const regInfo = await regInfoFetch.json();
 
-            setStages(regInfo.stages);
             setNames(scoresJson);
-            setTimes(new Array(stages).fill("a"))
+
+            if (reset == 2 || currentStage == 0) {
+                setStages(regInfo.stages);
+                setCurrentStage(1);
+                setTime("");
+                setTimes([]);
+            }
         }
     }
 
-    const updateScores = async(_): Promise<void> => {
+    const closeModal = (): void => {
+        setModalOpen(false);
+    };
+
+    const saveTime = (): boolean => {
+        if (!Constants.timeStringRegex.test(time)) {
+            setModalOpen(true);
+            return false;
+        }
+
+        let timesTemp = times;
+        timesTemp[currentStage-1] = time;
+        setTimes(timesTemp);
+        return true;
+    };
+
+    const previousStage = (): void => {
+        if (!saveTime()) return;
+        if (currentStage < 2) return;
+
+        setTime(times[currentStage - 2] || "");
+        setCurrentStage(currentStage - 1);
+    };
+
+    const nextStage = (): void => {
+        if (!saveTime()) return;
+
+        if (currentStage + 1 > stages) { // upload scores
+            updateScores();
+            return;
+        }
+        
+        setTime(times[currentStage] || "");
+        setCurrentStage(currentStage + 1);
+    };
+
+    const updateScores = async(): Promise<void> => {
         await fetch("/api/contestants", {
             method: "PATCH",
             body: JSON.stringify({ name: contestant, times: times })
         });
-        handleChange(null, 1);
+        handleChange(2, 1);
     };
 
     return (
@@ -87,29 +142,36 @@ export default function JudgeAdmin() {
                 </Tabs>
             </AppBar>
 
-            <div style={{ display: (value === 0) ? "block" : "none", paddingTop: 16 }}>
+            <div style={{ display: (value == 0 && currentStage != 0) ? "block" : "none", paddingTop: 16 }}>
                 <p>Wybrany uczestnik: <b>{contestant}</b></p><br />
-                <Stack spacing={2} sx={{ pb: 2 }}>
-                {[...Array(stages)].map((_, i) => (
-                    <FormControl variant="standard" key={"C"+i}>
-                        <InputLabel htmlFor={"S"+i} key={"L"+i}>Wynik ({i + 1})</InputLabel>
-                        <Input inputProps={{ inputMode: "numeric" }} type="text" key={"S"+i} onChange={e => {let q=times;q[i]=e.target.value;setTimes(q);}} inputComponent={TextMaskCustom} />
-                    </FormControl>
-                ))}
-                </Stack>
-                <Button variant="contained" color="success" onClick={updateScores}>Zatwierdź</Button>
+                <FormControl variant="standard" key="C">
+                    <InputLabel htmlFor="S" key="L">Wynik ({currentStage})</InputLabel>
+                    <Input inputProps={{ inputMode: "numeric" }} type="text" key="S" value={time} onChange={e => {setTime(e.target.value);}} inputComponent={TextMaskCustom} />
+                </FormControl>
             </div>
 
-            <div style={{ display: (value === 1) ? "block" : "none", paddingTop: 16 }}>
+            {(value == 0 && currentStage > 1) && (
+                <Fab sx={{ ...fabStyle, left: 16, display: value == 0 ? "block" : "none" }} color="secondary" onClick={previousStage}>
+                    <NavigateBeforeIcon />
+                </Fab>
+            )}
+
+            {(value == 0 && currentStage != 0) && (
+                <Fab sx={{ ...fabStyle, right: 16, display: value == 0 ? "block" : "none" }} color="primary" onClick={nextStage}>
+                    {currentStage < stages ? (<NavigateNextIcon />) : (<PublishIcon />)}
+                </Fab>
+            )}
+
+            <div style={{ display: value == 1 ? "block" : "none", paddingTop: 16 }}>
                 <TableContainer>
                     <Table>
                         <TableBody>
                             {
                                 names.map(name => (
-                                    <TableRow key={name.name} sx={{ backgroundColor: contestant === name.name ? "blue" : "" }}>
+                                    <TableRow key={name.name} sx={{ backgroundColor: contestant == name.name ? "blue" : "" }}>
                                         <TableCell key={"n"+name.name}>{name.name}</TableCell>
                                         <TableCell key={"d"+name.name}>
-                                            <IconButton size="medium" onClick={e => {setTimes(new Array(stages).fill("")), setContestant(name.name);}} key={"i"+name.name}>
+                                            <IconButton size="medium" onClick={e => {setContestant(name.name);}} key={"i"+name.name}>
                                                 <CheckIcon key={"c"+name.name} fontSize="medium" color="info" />
                                             </IconButton>
                                         </TableCell>
@@ -120,15 +182,33 @@ export default function JudgeAdmin() {
                     </Table>
                 </TableContainer>
             </div>
-
-            
+            <div>
+                <Dialog
+                    open={modalOpen}
+                    onClose={closeModal}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Błąd"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Wprowadzone dane są niepełne lub nieprawidłowe.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeModal}>OK</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </main>
     );
 }
 
 /*
 
-    const [modalOpen, setModalOpen] = React.useState(false);
+    
 <div>
                 <Modal open={modalOpen} onClose={closeModal} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
                     <Box sx={modalStyle}>

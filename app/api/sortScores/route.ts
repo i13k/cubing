@@ -20,7 +20,7 @@ export async function GET(rq: Request) {
     
     const response: string = await getResponse(client, isDelete);
 
-    await database.collection("cache").updateOne({ }, { $set: { cacheValid: true, cachedResponse: response } });
+    await database.collection("cache").updateOne({ }, { $set: { cacheValid: !isDelete, cachedResponse: response } });
     await client.close();
 
     return new Response(response, {
