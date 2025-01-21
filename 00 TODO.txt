@@ -5,4 +5,5 @@
   event -> puzzle -> round
 * bug [!!]: scoreboard sometimes shows people who have been removed
 * use millisecond as base (ie. 2:32.423 => 152423)
+* make editor for contest config
 // * bug: pages don't work on first load -- probably because of HMR/compilation in dev mode
