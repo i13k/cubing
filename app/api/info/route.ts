@@ -11,4 +11,4 @@ export async function GET() {
     return Response.json(info, { status: 200 });
 }
 
-export const dynamic: string = "force-dynamic";
+export const dynamic = "force-dynamic";

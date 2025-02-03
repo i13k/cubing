@@ -29,4 +29,4 @@ export async function GET(rq: Request) {
     });
 }
 
-export const dynamic: string = "force-dynamic";
+export const dynamic = "force-dynamic";

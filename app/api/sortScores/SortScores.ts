@@ -35,14 +35,12 @@ export default async function getResponse(client: MongoClient, isDelete: boolean
         
         switch (regInfo.type) {
             case "A":
-                if (DNFs > 1) { // if 1 or more DNFs
+                if (DNFs > 1) { // if more than 1 DNFs
                     scores[i].avg = "DNF";
                     scores[i].sum = Infinity;
                     scores[i].gray = ["DNF"];
                 } else {
-                    let min: number = scores[i].times[0],
-                        max: number = scores[i].times[0],
-                        removedMin: boolean = false,
+                    let removedMin: boolean = false,
                         removedMax: boolean = false,
                         times: number[] = [];
 
@@ -51,11 +49,13 @@ export default async function getResponse(client: MongoClient, isDelete: boolean
                         else times.push(time);
                     });
 
-                    times.slice(1).map(time => {
+                    let min: number = times[0],
+                        max: number = times[0];
+
+                    times.map(time => {
                         if (time < min) min = time;
                         if (time > max) max = time;
                     });
-
                     let timesWithoutMinmax: number[] = [];
 
                     times.map(time => {

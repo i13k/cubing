@@ -26,4 +26,4 @@ export async function GET(_: Request) {
     return new Response(null, { status: 204 });
 }
 
-export const dynamic: string = "force-dynamic";
+export const dynamic = "force-dynamic";

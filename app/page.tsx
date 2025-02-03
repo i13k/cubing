@@ -6,7 +6,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Decimal from 'decimal.js';
 import { green } from '@mui/material/colors';
 import { Fade } from '@mui/material';
 import { ArraySortScoreResponse } from '@/app/messages';
@@ -128,7 +127,6 @@ class ScoresComponent extends Component {
                 status: this.state.status
             });
         }, 3000);*/
-        Decimal.set({ precision: 7 });
         this.mainLoop();
     }
     componentWillUnmount(): void {

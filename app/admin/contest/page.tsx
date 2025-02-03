@@ -48,6 +48,7 @@ export default function ContestAdmin() {
     }
 
     const removeContestants = async (_: any): Promise<void> => {
+        removeContestantsClose(null);
         await fetch("/api/sortScores?delete=true");
         syncDownload();
     };

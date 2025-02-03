@@ -1,4 +1,4 @@
-export default {
+const config = {
     dataRefreshInterval: 3000,
     showingTime: 1000,
     shownTime: 2000,
@@ -8,3 +8,5 @@ export default {
     timeStringRegex: /\d:[0-5]\d\.\d{3}/,
     DNF: "0:00.000"
 };
+
+export default config;
