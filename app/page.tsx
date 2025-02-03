@@ -68,8 +68,8 @@ class ScoresComponent extends Component {
         const scoresRaw = await scoresFetch.text();
         const scores = ArraySortScoreResponse.decode(new Uint8Array(scoresRaw.split("").map(c => c.charCodeAt(0)))).responses;
 
-        if (window.location.pathname != regInfo.currentRoute)
-            window.location.pathname = regInfo.currentRoute;
+        if (window.location.pathname != regInfo.route)
+            window.location.pathname = regInfo.route;
 
         await this.psetState({
             scores: scores,
@@ -141,7 +141,7 @@ class ScoresComponent extends Component {
               <TableContainer>
                   <Table sx={{ tableLayout: "fixed", width: "100%" }}>
                       <TableHead>
-                          <TableRow key="h">
+                          <TableRow>
                               <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell, ...styles.ranking }} align="right">#</TableCell>
                               <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell, ...styles.name }}>uczestnik</TableCell>
                               {[...Array(this.state.stages)].map((_, i) => <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell }} align="right" key={"H"+i}>{i + 1}</TableCell>)}

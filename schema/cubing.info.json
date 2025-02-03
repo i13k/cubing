@@ -1,0 +1,12 @@
+[{
+  "_id": {
+    "$oid": "66811c4c238db5735c3e4e06"
+  },
+  "round": 1,
+  "stages": 3,
+  "type": "M",
+  "qualification": 30,
+  "announcement": "Testowe ogłoszenie.",
+  "grouping": [],
+  "route": "/info/registration"
+}]

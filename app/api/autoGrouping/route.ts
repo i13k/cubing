@@ -21,7 +21,7 @@ export async function GET(_: Request) {
     for (let i: number = 0; i < Constants.peoplePerGroup; ++i)
         contestants[i] && names.push(contestants[i].name);
 
-    await db.collection("info").updateOne({ }, { $set: { people: names, currentRoute: "/info/getready" } });
+    await db.collection("info").updateOne({ }, { $set: { grouping: names, route: "/info/getready" } });
     await client.close();
     return new Response(null, { status: 204 });
 }

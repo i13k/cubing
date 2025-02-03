@@ -1,8 +1,7 @@
 * custom Infomessage screen, (drukowanie dyplomów, etc.)
 * random numbers screen !!!,
 * use participant ID
+* bug [!!]: scoreboard sometimes shows people who have been removed
 * add structure:
   event -> puzzle -> round
-* bug [!!]: scoreboard sometimes shows people who have been removed
-* use millisecond as base (ie. 2:32.423 => 152423)
 // * bug: pages don't work on first load -- probably because of HMR/compilation in dev mode

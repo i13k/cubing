@@ -34,8 +34,9 @@ export async function DELETE(rq: Request) {
 
 const parseTimeString = (timeString: string): number => {
     const min: number = parseInt(timeString[0]),
-          sec: number = parseFloat(timeString.slice(2, 8));
-    return 60*min + sec;
+          sec: number = parseInt(timeString[2] + timeString[3]),
+          ms:  number = parseInt(timeString[5] + timeString[6] + timeString[7]);
+    return 60000*min + 1000*sec + ms;
 };
 
 interface Contestant {

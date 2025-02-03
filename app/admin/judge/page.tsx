@@ -40,18 +40,6 @@ const TextMaskCustom = React.forwardRef(function TextMaskCustom(props: any, ref)
     );
 });
 
-const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    boder: '2px solid #000',
-    boxShadow: 24,
-    p: 4
-};
-
 const fabStyle = {
     position: 'absolute',
     bottom: 16
@@ -66,6 +54,7 @@ export default function JudgeAdmin() {
     const [time, setTime] = React.useState("");
     const [currentStage, setCurrentStage] = React.useState(0);
     const [modalOpen, setModalOpen] = React.useState(false);
+    const [confirmOpen, setConfirmOpen] = React.useState(false);
 
     const handleChange = async (reset, v: number): Promise<void> => {
         setValue(v);
@@ -93,6 +82,10 @@ export default function JudgeAdmin() {
         setModalOpen(false);
     };
 
+    const closeConfirm = (): void => {
+        setConfirmOpen(false);
+    };
+
     const saveTime = (): boolean => {
         if (!Constants.timeStringRegex.test(time)) {
             setModalOpen(true);
@@ -117,7 +110,7 @@ export default function JudgeAdmin() {
         if (!saveTime()) return;
 
         if (currentStage + 1 > stages) { // upload scores
-            updateScores();
+            showConfirm();
             return;
         }
         
@@ -125,11 +118,16 @@ export default function JudgeAdmin() {
         setCurrentStage(currentStage + 1);
     };
 
-    const updateScores = async(): Promise<void> => {
+    const showConfirm = (): void => {
+        setConfirmOpen(true);
+    };
+
+    const uploadScores = async(): Promise<void> => {
         await fetch("/api/contestants", {
             method: "PATCH",
             body: JSON.stringify({ name: contestant, times: times })
         });
+        closeConfirm();
         handleChange(2, 1);
     };
 
@@ -190,7 +188,7 @@ export default function JudgeAdmin() {
                     aria-describedby="alert-dialog-description"
                 >
                     <DialogTitle id="alert-dialog-title">
-                        {"Błąd"}
+                        Błąd
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
@@ -202,32 +200,28 @@ export default function JudgeAdmin() {
                     </DialogActions>
                 </Dialog>
             </div>
+            <div>
+                <Dialog
+                    open={confirmOpen}
+                    onClose={closeConfirm}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        Potwierdź wyniki
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Uczestnik: <b>{contestant}</b><br />
+                            {[...Array(stages)].map((_, i) => <span key={"S"+i.toString()}><b>{i+1}</b>: {times[i]}<br /></span>)}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeConfirm}>Popraw</Button>
+                        <Button onClick={uploadScores} color="error">Wyślij</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </main>
     );
 }
-
-/*
-
-    
-<div>
-                <Modal open={modalOpen} onClose={closeModal} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                    <Box sx={modalStyle}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Błąd danych
-                        </Typography>
-                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                            Wprowadzone dane są niepełne lub nieprawidłowe.
-                        </Typography>
-                    </Box>
-                </Modal>
-            </div>
-            let error = false;
-        for (let i = 0; i < times.length; ++i) {
-            if (times[i].length != 8) { error = true; break; }
-            if (parseInt(times[i][2]) > 5) { error = true; break; }
-        }
-        if (error) {
-            setModalOpen(true);
-            return;
-        }
-*/

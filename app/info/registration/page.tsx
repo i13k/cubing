@@ -21,8 +21,8 @@ class InfoCenterComponent extends React.Component {
         const regInfoFetch = await fetch("/api/info");
         const regInfo = await regInfoFetch.json();
 
-        if (window.location.pathname != regInfo.currentRoute)
-            window.location.pathname = regInfo.currentRoute;
+        if (window.location.pathname != regInfo.route)
+            window.location.pathname = regInfo.route;
 
         const scoresFetch = await fetch("/api/scores");
         const scoresRaw = await scoresFetch.text();

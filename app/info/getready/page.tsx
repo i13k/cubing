@@ -13,7 +13,7 @@ import Constants from '@/app/constants';
 
 interface RozstawienieState {
     round: string;
-    people: string[];
+    grouping: string[];
     announcement?: string;
 }
 
@@ -22,18 +22,18 @@ class RozstawienieComponent extends React.Component {
     state: RozstawienieState;
     constructor(props) {
         super(props);
-        this.state = { round: "", people: [] };
+        this.state = { round: "", grouping: [] };
     }
     async refreshData() {
         const regInfoFetch = await fetch("/api/info");
         const regInfo = await regInfoFetch.json();
 
-        if (window.location.pathname != regInfo.currentRoute)
-            window.location.pathname = regInfo.currentRoute;
+        if (window.location.pathname != regInfo.route)
+            window.location.pathname = regInfo.route;
 
         this.setState({
             round: regInfo.round,
-            people: regInfo.people,
+            grouping: regInfo.grouping,
             announcement: regInfo.announcement
         });
     }
@@ -63,7 +63,7 @@ class RozstawienieComponent extends React.Component {
                                         </TableHead>
                                         <TableBody>
                                             {
-                                                this.state.people.map((person, index) => (
+                                                this.state.grouping.map((person, index) => (
                                                     <TableRow key={person}>
                                                         <TableCell sx={{ fontSize: Constants.fontSize }} component="th" align="right">{index + 1}</TableCell>
                                                         <TableCell sx={{ fontSize: Constants.fontSize }}>{person}</TableCell>
