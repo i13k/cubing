@@ -1,9 +1,8 @@
 # cubing
-Software for directing a speedcubing competition. Currently very basic, but this is subject to change.
+Software for directing a speedcubing competition.
 To get started,
 * create a mongoDB database called `cubing`,
-* create a collection called `info`,
-* import `public/info.json` into it.
+* import the files in the folder `schema` into it.
 Then, run `npm i` and `npm run dev` for a development setup, or `npm build && npm run start` for a production setup.
 
 Stuff to note:
