@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider, createTheme, Theme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-const darkTheme: Theme = createTheme({ palette: { mode: "dark" } });
+const currentTheme: Theme = createTheme({ palette: { mode: "dark" } });
 
 export default function RootLayout({ children }) {
   return (
@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </head>
       <body>
-        <ThemeProvider theme={darkTheme}>
+        <ThemeProvider theme={currentTheme}>
           <CssBaseline />
           {children}
         </ThemeProvider>
