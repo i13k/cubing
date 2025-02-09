@@ -11,6 +11,7 @@ export async function GET(rq: Request) {
     if (!isDelete) {
         const cacheData = await database.collection("cache").findOne({ }, { projection: { _id: 0 }});
         if (cacheData.cacheValid) {
+            await client.close();
             return new Response(cacheData.cachedResponse, {
                 status: 200,
                 headers: { "content-type": "application/octet-stream" }
