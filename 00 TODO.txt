@@ -1,13 +1,8 @@
-* custom Infomessage screen, (drukowanie dyplomów, etc.)
 * random numbers screen !!!,
 * use participant ID
 * bug [!!]: scoreboard sometimes shows people who have been removed
+* bug [!!]: judge phones must always ask for correct number of stages.
 * add structure:
   event -> puzzle -> round
-<<<<<<< HEAD
-=======
-* bug [!!]: scoreboard sometimes shows people who have been removed
-* use millisecond as base (ie. 2:32.423 => 152423)
-* make editor for contest config
->>>>>>> 2f1798c087591a7b5dfb07f77f8b90e4ee8beedf
 // * bug: pages don't work on first load -- probably because of HMR/compilation in dev mode
+// * custom Infomessage screen, (drukowanie dyplomów, etc.) -- will be separately created, not as part of this app

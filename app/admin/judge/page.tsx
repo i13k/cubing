@@ -98,6 +98,12 @@ export default function JudgeAdmin() {
         return true;
     };
 
+    const updateStages = async (): Promise<void> => {
+        const regInfoFetch = await fetch("/api/info");
+        const regInfo = await regInfoFetch.json();
+        setStages(regInfo.stages);
+    };
+
     const previousStage = (): void => {
         if (!saveTime()) return;
         if (currentStage < 2) return;
@@ -125,7 +131,7 @@ export default function JudgeAdmin() {
     const uploadScores = async(): Promise<void> => {
         await fetch("/api/contestants", {
             method: "PATCH",
-            body: JSON.stringify({ name: contestant, times: times })
+            body: JSON.stringify({ name: contestant, times: times.slice(0, stages) })
         });
         closeConfirm();
         handleChange(2, 1);
@@ -169,7 +175,7 @@ export default function JudgeAdmin() {
                                     <TableRow key={name.name} sx={{ backgroundColor: contestant == name.name ? "blue" : "" }}>
                                         <TableCell key={"n"+name.name}>{name.name}</TableCell>
                                         <TableCell key={"d"+name.name}>
-                                            <IconButton size="medium" onClick={e => {setContestant(name.name);}} key={"i"+name.name}>
+                                            <IconButton size="medium" onClick={e => {setContestant(name.name); updateStages();}} key={"i"+name.name}>
                                                 <CheckIcon key={"c"+name.name} fontSize="medium" color="info" />
                                             </IconButton>
                                         </TableCell>
