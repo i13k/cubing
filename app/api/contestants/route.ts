@@ -65,11 +65,17 @@ export async function PATCH(rq: Request) {
         }
         times.push(parseTimeString(req.times[i]));
         if (req.times[i] === Constants.DNF) req.times[i] = "DNF";
+        else {
+            if (req.times[i][0] == "0") req.times[i] = req.times[i].slice(2);
+            if (req.times[i][0] == "0") req.times[i] = req.times[i].slice(1);
+        }
     }
 
     await client.db("cubing").collection("scores")
         .updateOne({ name: req.name }, { $set: { times: times, timesString: req.times } });
     await client.db("cubing").collection("cache").updateOne({ }, { $set: { cacheValid: false } });
+    let grouping = regInfo.grouping.filter(n => n != req.name);
+    await client.db("cubing").collection("info").updateOne({ }, { $set: { grouping: grouping }});
     await client.close();
 
     return new Response(null, { status: 204 });

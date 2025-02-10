@@ -92,6 +92,12 @@ class ScoresComponent extends Component {
         await this.refreshData();
 
         while (this.running) {
+            if (this.state.scores.length < getNumberOfRows()) {
+                await this.setStatus("shown");
+                await sleep(Constants.onePageTime);
+                await this.refreshData();
+                continue;
+            }
             await this.setStatus("showing");
             await sleep(Constants.showingTime);
 

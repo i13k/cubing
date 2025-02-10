@@ -6,7 +6,8 @@ const config = {
     fontSize: 48,
     peoplePerGroup: 6,
     timeStringRegex: /\d:[0-5]\d\.\d{3}/,
-    DNF: "0:00.000"
+    DNF: "0:00.000",
+    onePageTime: 5000
 };
 
 export default config;

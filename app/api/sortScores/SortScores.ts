@@ -10,10 +10,13 @@ const numberToTimeString = (ms: number): string => {
     ms = Math.round(ms);
 
     const minutes: string = Math.floor(ms / 60000).toString();
-    const seconds: string = zeroPad(Math.floor((ms % 60000) / 1000), 2);
+    let seconds: string = zeroPad(Math.floor((ms % 60000) / 1000), 2);
     const millis: string = zeroPad(ms % 1000, 3);
 
-    return minutes + ":" + seconds + "." + millis;
+    const minutePart = minutes == "0" ? "" : (minutes + ":");
+    if (minutePart == "" && seconds[0] == "0") seconds = seconds.slice(1);
+
+    return minutePart + seconds + "." + millis;
 };
 
 export default async function getResponse(client: MongoClient, isDelete: boolean) {
