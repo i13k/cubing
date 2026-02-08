@@ -1,7 +1,7 @@
 import * as mongo from "mongodb";
 
 export async function GET() {
-    const client: mongo.MongoClient = new mongo.MongoClient("mongodb://localhost:27017/");
+    const client = new mongo.MongoClient("mongodb://localhost:27017/");
     await client.connect();
 
     const info: mongo.WithId<mongo.BSON.Document> =

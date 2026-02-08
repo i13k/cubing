@@ -98,6 +98,7 @@ class ScoresComponent extends Component {
                 await this.refreshData();
                 continue;
             }
+
             await this.setStatus("showing");
             await sleep(Constants.showingTime);
 
@@ -120,19 +121,6 @@ class ScoresComponent extends Component {
     componentDidMount(): void {
         this.currentRow = 0;
         this.running = true;
-        /*this.interval = setInterval(() => {
-            this.currentRow += getNumberOfRows();
-            if (this.currentRow >= this.state.scores.length) {
-                this.currentRow = 0;
-                this.refreshData();
-            }
-            this.setState({
-                scores: this.state.scores,
-                stages: this.state.stages,
-                fontSize: this.state.fontSize,
-                status: this.state.status
-            });
-        }, 3000);*/
         this.mainLoop();
     }
     componentWillUnmount(): void {
@@ -155,7 +143,7 @@ class ScoresComponent extends Component {
                       <TableBody>
                           {
                               this.state.scores.slice(this.currentRow, this.currentRow + getNumberOfRows()).map((score, index) => (
-                                <Fade timeout={{ enter: 1000, exit: 1000 }} style={ this.state.status === "showing" ? { transitionDelay: `${index * 150}ms`} : {}}
+                                <Fade timeout={{ enter: 1000, exit: 1000 }} style={ this.state.status == "showing" ? { transitionDelay: `${index * 150}ms`} : {}}
                                 in={["showing", "shown"].includes(this.state.status)} key={"F"+score.name}>
                                     <TableRow>
                                         <TableCell sx={{ fontSize: Constants.fontSize, ...(score.green ? styles.advancing : {}), ...styles.ranking, ...styles.name }} align="right" key={"P"+score.name}>{score.place}</TableCell>

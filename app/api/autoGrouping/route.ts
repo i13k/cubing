@@ -18,7 +18,7 @@ export async function GET(_: Request) {
     const contestants: Contestant[] = await contestantsCursor.toArray();
     let names: string[] = [];
 
-    for (let i: number = 0; i < Constants.peoplePerGroup; ++i)
+    for (let i = 0; i < Constants.peoplePerGroup; ++i)
         contestants[i] && names.push(contestants[i].name);
 
     await db.collection("info").updateOne({ }, { $set: { grouping: names, route: "/info/getready" } });

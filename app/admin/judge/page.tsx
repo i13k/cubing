@@ -41,7 +41,7 @@ const fabStyle = {
 };
 
 export default function JudgeAdmin() {
-    const [value, setValue] = React.useState(1);
+    const [choosingContestant, setChoosingContestant] = React.useState(true);
     const [stages, setStages] = React.useState(0);
     const [times, setTimes] = React.useState([]);
     const [contestant, setContestant] = React.useState("");
@@ -81,12 +81,6 @@ export default function JudgeAdmin() {
         setStages(regInfo.stages);
     };
 
-    const handleChange = async (v: number): Promise<void> => {
-        if (v == 1) await updateScores();
-        if (v == 0) await updateStages();
-        setValue(v);
-    }
-
     const saveTime = (): boolean => {
         if (!Constants.timeStringRegex.test(time)) {
             setModalOpen(true);
@@ -125,14 +119,16 @@ export default function JudgeAdmin() {
             method: "PATCH",
             body: JSON.stringify({ name: contestant, times: times.slice(0, stages) })
         });
-        await handleChange(1);
+        await updateScores();
+        setChoosingContestant(true);
         setLoading(false);
     };
 
     const selectContestant = async (name: string): Promise<void> => {
         setLoading(true);
         setContestant(name);
-        await handleChange(0);
+        await updateStages();
+        setChoosingContestant(false);
         setLoading(false);
     };
 
@@ -151,7 +147,8 @@ export default function JudgeAdmin() {
             <Backdrop sx={{ color: "#222222", zIndex: theme => theme.zIndex.drawer + 1 }} open={loading}>
                 {loading && <CircularProgress />}
             </Backdrop>
-            <div style={{ display: (value == 0 && currentStage != 0) ? "block" : "none", paddingTop: 16 }}>
+
+            <div style={{ display: (!choosingContestant && currentStage != 0) ? "block" : "none", paddingTop: 16 }}>
                 <p>Uczestnik: <b>{contestant}</b></p><br />
                 <FormControl variant="standard" key="C">
                     <InputLabel htmlFor="S" key="L">Wynik ({currentStage})</InputLabel>
@@ -159,19 +156,19 @@ export default function JudgeAdmin() {
                 </FormControl>
             </div>
 
-            {(value == 0 && currentStage > 1) && (
-                <Fab sx={{ ...fabStyle, left: 16, display: value == 0 ? "block" : "none" }} color="secondary" onClick={previousStage}>
+            {(!choosingContestant && currentStage > 1) && (
+                <Fab sx={{ ...fabStyle, left: 16, display: "block" }} color="secondary" onClick={previousStage}>
                     <NavigateBeforeIcon />
                 </Fab>
             )}
 
-            {(value == 0 && currentStage != 0) && (
-                <Fab sx={{ ...fabStyle, right: 16, display: value == 0 ? "block" : "none" }} color="primary" onClick={nextStage}>
+            {(!choosingContestant && currentStage != 0) && (
+                <Fab sx={{ ...fabStyle, right: 16, display: "block" }} color="primary" onClick={nextStage}>
                     {currentStage < stages ? (<NavigateNextIcon />) : (<PublishIcon />)}
                 </Fab>
             )}
 
-            <div style={{ display: value == 1 ? "block" : "none", paddingTop: 16 }}>
+            <div style={{ display: choosingContestant ? "block" : "none", paddingTop: 16 }}>
                 <TableContainer>
                     <Table>
                         <TableBody>

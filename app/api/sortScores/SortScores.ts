@@ -19,7 +19,7 @@ const numberToTimeString = (ms: number): string => {
     return minutePart + seconds + "." + millis;
 };
 
-export default async function getResponse(client: MongoClient, isDelete: boolean) {
+export default async function getResponse(client: MongoClient, isDelete: boolean): Promise<string> {
     const database = client.db("cubing");
     const scoresCursor = await database.collection("scores").find({ }, { projection: { _id: 0 } });
     const regInfo = await database.collection("info").findOne({ }, { projection: { _id: 0 } });
@@ -28,9 +28,9 @@ export default async function getResponse(client: MongoClient, isDelete: boolean
 
     scores = scores.filter(s => s.times.length > 0);
 
-    for (let i: number = 0; i < scores.length; ++i) {
-        let DNFs: number = 0;
-        for (let j: number = 0; j < scores[i].times.length; ++j) {
+    for (let i = 0; i < scores.length; ++i) {
+        let DNFs = 0;
+        for (let j = 0; j < scores[i].times.length; ++j) {
             if (scores[i].times[j] === 0)
                 ++DNFs;
             if (DNFs == 2) break;
@@ -38,13 +38,13 @@ export default async function getResponse(client: MongoClient, isDelete: boolean
         
         switch (regInfo.type) {
             case "A":
-                if (DNFs > 1) { // if more than 1 DNFs
+                if (DNFs > 1) {
                     scores[i].avg = "DNF";
                     scores[i].sum = Infinity;
                     scores[i].gray = ["DNF"];
                 } else {
-                    let removedMin: boolean = false,
-                        removedMax: boolean = false,
+                    let removedMin = false,
+                        removedMax = false,
                         times: number[] = [];
 
                     scores[i].times.map(time => {
@@ -52,16 +52,16 @@ export default async function getResponse(client: MongoClient, isDelete: boolean
                         else times.push(time);
                     });
 
-                    let min: number = times[0],
-                        max: number = times[0];
+                    let min = times[0],
+                        max = times[0];
 
-                    times.map(time => {
+                    times.forEach(time => {
                         if (time < min) min = time;
                         if (time > max) max = time;
                     });
                     let timesWithoutMinmax: number[] = [];
 
-                    times.map(time => {
+                    times.forEach(time => {
                         if (time == max && !removedMax)
                             removedMax = true;
                         else if (time == min && !removedMin)
@@ -71,7 +71,7 @@ export default async function getResponse(client: MongoClient, isDelete: boolean
                     });
 
                     scores[i].sum = 0;
-                    timesWithoutMinmax.map(time => {
+                    timesWithoutMinmax.forEach(time => {
                         scores[i].sum += time;
                     });
 
@@ -118,22 +118,22 @@ export default async function getResponse(client: MongoClient, isDelete: boolean
 
     scores = scores.sort((a, b) => a.sum - b.sum);
 
-    for (let i: number = 0; i < scores.length; ++i) {
-        if (i === 0) scores[i].place = 1;
+    for (let i = 0; i < scores.length; ++i) {
+        if (i == 0) scores[i].place = 1;
         else if (scores[i].sum == scores[i - 1].sum) scores[i].place = scores[i - 1].place;
         else scores[i].place = i + 1;
 
         scores[i].green = scores[i].place <= regInfo.qualification;
     }
 
-    for (let i: number = 0; i < scores.length; ++i) {
+    for (let i = 0; i < scores.length; ++i) {
         scores[i].times = scores[i].timesString;
         delete scores[i].sum;
         delete scores[i].timesString;
     }
     
     if (isDelete) { // remove unqualified people
-        for (let i: number = 0; i < scores.length; ++i)
+        for (let i = 0; i < scores.length; ++i)
             if (!scores[i].green)
                 await database.collection("scores").deleteOne({ name: scores[i].name });
         
