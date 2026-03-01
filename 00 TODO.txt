@@ -1,6 +1,4 @@
-* optional delay between each score shown in `info' and start showing from the bottom
-* update dependencies
-* random numbers screen !!!,
+* random numbers screen !!!
 * use participant ID
 * bug [!!]: scoreboard sometimes shows people who have been removed
 * bug [!!]: judge phones must always ask for correct number of stages.
