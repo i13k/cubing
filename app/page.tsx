@@ -45,6 +45,7 @@ interface ScoresComponentState {
     scores: any[];
     stages: number;
     status: string;
+    bottomReveal: boolean;
 }
 
 class ScoresComponent extends Component {
@@ -54,7 +55,7 @@ class ScoresComponent extends Component {
     state: ScoresComponentState;
     constructor(props) {
         super(props);
-        this.state = { scores: [], stages: 0, status: "shown" };
+        this.state = { scores: [], stages: 0, status: "showing", bottomReveal: false };
         this.executed = false;
         this.running = true;
     }
@@ -73,7 +74,8 @@ class ScoresComponent extends Component {
         await this.psetState({
             scores: scores,
             stages: regInfo.stages,
-            status: this.state.status
+            status: this.state.status,
+            bottomReveal: regInfo.bottomReveal
         });
     }
 
@@ -81,8 +83,17 @@ class ScoresComponent extends Component {
         await this.psetState({
             scores: this.state.scores,
             stages: this.state.stages,
-            status: status
+            status,
+            bottomReveal: this.state.bottomReveal
         });
+    }
+
+    getTransitionDelayPerRow() {
+        return this.state.bottomReveal ? 1000 : 150;
+    }
+
+    getTransitionDelay(index) {
+        return this.state.bottomReveal ? ((Math.min(getNumberOfRows(), this.state.scores.length-this.currentRow)-index-1)*this.getTransitionDelayPerRow()) : (index*this.getTransitionDelayPerRow());
     }
 
     async mainLoop() {
@@ -92,7 +103,7 @@ class ScoresComponent extends Component {
         await this.refreshData();
 
         while (this.running) {
-            if (this.state.scores.length < getNumberOfRows()) {
+            if (this.state.scores.length < getNumberOfRows() && !this.state.bottomReveal) {
                 await this.setStatus("shown");
                 await sleep(Constants.onePageTime);
                 await this.refreshData();
@@ -100,10 +111,12 @@ class ScoresComponent extends Component {
             }
 
             await this.setStatus("showing");
-            await sleep(Constants.showingTime);
+            await sleep(this.getTransitionDelayPerRow() * getNumberOfRows() + Constants.showingTime);
 
             await this.setStatus("shown");
             await sleep(Constants.shownTime);
+
+            if (this.state.bottomReveal) return;
 
             await this.setStatus("hiding");
             await sleep(Constants.hidingTime);
@@ -113,8 +126,6 @@ class ScoresComponent extends Component {
                 this.currentRow = 0;
                 await this.refreshData();
             }
-            
-            await sleep(Constants.hidingTime);
         }
     }
 
@@ -143,8 +154,12 @@ class ScoresComponent extends Component {
                       <TableBody>
                           {
                               this.state.scores.slice(this.currentRow, this.currentRow + getNumberOfRows()).map((score, index) => (
-                                <Fade timeout={{ enter: 1000, exit: 1000 }} style={ this.state.status == "showing" ? { transitionDelay: `${index * 150}ms`} : {}}
-                                in={["showing", "shown"].includes(this.state.status)} key={"F"+score.name}>
+                                <Fade
+                                    timeout={{ enter: Constants.showingTime, exit: Constants.hidingTime }}
+                                    style={ this.state.status == "showing" ? { transitionDelay: `${this.getTransitionDelay(index)}ms`} : {}}
+                                    in={["showing", "shown"].includes(this.state.status)}
+                                    key={"F"+score.name}
+                                >
                                     <TableRow>
                                         <TableCell sx={{ fontSize: Constants.fontSize, ...(score.green ? styles.advancing : {}), ...styles.ranking, ...styles.name }} align="right" key={"P"+score.name}>{score.place}</TableCell>
                                         <TableCell sx={{ fontSize: Constants.fontSize, ...styles.cell, ...styles.name }} key={"N"+score.name}>{score.name}</TableCell>

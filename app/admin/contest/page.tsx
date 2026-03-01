@@ -11,6 +11,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
+import { FormControlLabel } from '@mui/material';
 
 export default function ContestAdmin() {
     const [confirmRemoveContestantsOpen, setConfirmRemoveContestantsOpen] = React.useState(false);
@@ -20,6 +22,7 @@ export default function ContestAdmin() {
     const [type, setType] = React.useState("M");
     const [qualification, setQualification] = React.useState("20");
     const [announcement, setAnnouncement] = React.useState("Testowe ogłoszenie.");
+    const [bottomReveal, setBottomReveal] = React.useState(false);
 
     const removeContestantsOpen = (_: any): void => {
         setConfirmRemoveContestantsOpen(true);
@@ -38,12 +41,13 @@ export default function ContestAdmin() {
         setType(regInfo.type.toString());
         setQualification(regInfo.qualification.toString());
         setAnnouncement(regInfo.announcement.toString());
+        setBottomReveal(regInfo.bottomReveal);
     };
 
     const syncUpload = (): void => {
         fetch("/api/options", {
             method: "PATCH",
-            body: JSON.stringify({ "route": route, "round": parseInt(round), "stages": parseInt(stages), "type": type, "qualification": parseInt(qualification), "announcement": announcement })
+            body: JSON.stringify({ "route": route, "round": parseInt(round), "stages": parseInt(stages), "type": type, "qualification": parseInt(qualification), "announcement": announcement, "bottomReveal": bottomReveal })
         });
     }
 
@@ -79,6 +83,10 @@ export default function ContestAdmin() {
             <div style={{ paddingTop: 16 }}>
                 <TextField type="text" label="Runda" value={round} onChange={e => {setRound(e.target.value);}} style={{ width: 64 }} />&nbsp;
                 <TextField type="text" label="Etapy" value={stages} onChange={e => {setStages(e.target.value);}} style={{ width: 64 }} />
+            </div>
+
+            <div style={{ paddingTop: 16 }}>
+                <FormControlLabel control={<Checkbox checked={bottomReveal} onChange={e => {setBottomReveal(e.target.checked);}} />} label="pokazywać wyniki od dołu?" />
             </div>
 
             <div style={{ paddingTop: 16 }}>

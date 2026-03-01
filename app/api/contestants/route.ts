@@ -42,7 +42,7 @@ const parseTimeString = (timeString: string): number => {
 interface Contestant {
     name: string;
     times: string[];
-}
+};
 
 export async function PATCH(rq: Request) {
     const req: Contestant = await rq.json();
